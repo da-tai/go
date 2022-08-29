@@ -188,7 +188,7 @@ type ReaderFrom interface {
 }
 
 type ReaderFromPr interface {
-	ReadFrom(r Reader, pr bool) (n int64, err error)
+	ReadFromPr(r Reader, pr bool) (n int64, err error)
 }
 
 // WriterTo is the interface that wraps the WriteTo method.
@@ -476,7 +476,7 @@ func copyBufferPr(dst Writer, src Reader, buf []byte, pr bool) (written int64, e
 	}
 	// Similarly, if the writer has a ReadFrom method, use it to do the copy.
 	if rt, ok := dst.(ReaderFromPr); ok {
-		return rt.ReadFrom(src, pr)
+		return rt.ReadFromPr(src, pr)
 	}
 	if buf == nil {
 		size := 32 * 1024

@@ -206,7 +206,7 @@ func testSpliceNoUnixpacket(t *testing.T) {
 	//
 	// What we want is err == nil and handled == false, i.e. we never
 	// called poll.Splice, because we know the unix socket's network.
-	_, err, handled := splice(serverDown.(*TCPConn).fd, serverUp)
+	_, err, handled := splice(serverDown.(*TCPConn).fd, serverUp, true)
 	if err != nil || handled != false {
 		t.Fatalf("got err = %v, handled = %t, want nil error, handled == false", err, handled)
 	}
@@ -227,7 +227,7 @@ func testSpliceNoUnixgram(t *testing.T) {
 	defer clientDown.Close()
 	defer serverDown.Close()
 	// Analogous to testSpliceNoUnixpacket.
-	_, err, handled := splice(serverDown.(*TCPConn).fd, up)
+	_, err, handled := splice(serverDown.(*TCPConn).fd, up, true)
 	if err != nil || handled != false {
 		t.Fatalf("got err = %v, handled = %t, want nil error, handled == false", err, handled)
 	}
