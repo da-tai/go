@@ -45,7 +45,17 @@ func (a *TCPAddr) toLocal(net string) sockaddr {
 }
 
 func (c *TCPConn) readFrom(r io.Reader) (int64, error) {
-	if n, err, handled := splice(c.fd, r); handled {
+	if n, err, handled := splice(c.fd, r, true); handled {
+		return n, err
+	}
+	if n, err, handled := sendFile(c.fd, r); handled {
+		return n, err
+	}
+	return genericReadFrom(c, r)
+}
+
+func (c *TCPConn) readFromPr(r io.Reader, pr bool) (int64, error) {
+	if n, err, handled := splice(c.fd, r, pr); handled {
 		return n, err
 	}
 	if n, err, handled := sendFile(c.fd, r); handled {

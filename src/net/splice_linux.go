@@ -14,7 +14,7 @@ import (
 // is only enabled if r is a TCP or a stream-oriented Unix connection.
 //
 // If splice returns handled == false, it has performed no work.
-func splice(c *netFD, r io.Reader) (written int64, err error, handled bool) {
+func splice(c *netFD, r io.Reader, pr bool) (written int64, err error, handled bool) {
 	var remain int64 = 1 << 62 // by default, copy until EOF
 	lr, ok := r.(*io.LimitedReader)
 	if ok {
@@ -36,7 +36,7 @@ func splice(c *netFD, r io.Reader) (written int64, err error, handled bool) {
 		return 0, nil, false
 	}
 
-	written, handled, sc, err := poll.Splice(&c.pfd, &s.pfd, remain)
+	written, handled, sc, err := poll.Splice(&c.pfd, &s.pfd, remain, pr)
 	if lr != nil {
 		lr.N -= written
 	}
