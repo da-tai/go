@@ -30,7 +30,7 @@ const (
 // src and dst must both be stream-oriented sockets.
 //
 // If err != nil, sc is the system call which caused the error.
-func Splice(dst, src *FD, remain int64, pr bool) (written int64, handled bool, sc string, err error) {
+func Splice(dst, src *FD, remain int64, pr *bool) (written int64, handled bool, sc string, err error) {
 	p, sc, err := getPipe()
 	if err != nil {
 		return 0, false, sc, err
@@ -83,7 +83,7 @@ func Splice(dst, src *FD, remain int64, pr bool) (written int64, handled bool, s
 // ready for reading.
 //
 // If spliceDrain returns (0, nil), src is at EOF.
-func spliceDrain(pipefd int, sock *FD, max int, pr bool) (int, error) {
+func spliceDrain(pipefd int, sock *FD, max int, pr *bool) (int, error) {
 	if err := sock.readLock(); err != nil {
 		return 0, err
 	}
@@ -99,7 +99,7 @@ func spliceDrain(pipefd int, sock *FD, max int, pr bool) (int, error) {
 		if err != syscall.EAGAIN {
 			return n, err
 		}
-		if pr == false {
+		if !*pr {
 			return n, errors.New("pr false")
 		}
 		if err := sock.pd.waitRead(sock.isFile); err != nil {

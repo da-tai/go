@@ -135,7 +135,7 @@ func (c *TCPConn) ReadFrom(r io.Reader) (int64, error) {
 }
 
 // ReadFromPr implements the io.ReaderFrom ReadFrom method.
-func (c *TCPConn) ReadFromPr(r io.Reader, pr bool) (int64, error) {
+func (c *TCPConn) ReadFromPr(r io.Reader, pr *bool) (int64, error) {
 	if !c.ok() {
 		return 0, syscall.EINVAL
 	}

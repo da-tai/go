@@ -188,7 +188,7 @@ type ReaderFrom interface {
 }
 
 type ReaderFromPr interface {
-	ReadFromPr(r Reader, pr bool) (n int64, err error)
+	ReadFromPr(r Reader, pr *bool) (n int64, err error)
 }
 
 // WriterTo is the interface that wraps the WriteTo method.
@@ -390,7 +390,7 @@ func Copy(dst Writer, src Reader) (written int64, err error) {
 	return copyBuffer(dst, src, nil)
 }
 
-func CopyPr(dst Writer, src Reader, pr bool) (written int64, err error) {
+func CopyPr(dst Writer, src Reader, pr *bool) (written int64, err error) {
 	return copyBufferPr(dst, src, nil, pr)
 }
 
@@ -408,7 +408,7 @@ func CopyBuffer(dst Writer, src Reader, buf []byte) (written int64, err error) {
 	return copyBuffer(dst, src, buf)
 }
 
-func CopyBufferPr(dst Writer, src Reader, buf []byte, pr bool) (written int64, err error) {
+func CopyBufferPr(dst Writer, src Reader, buf []byte, pr *bool) (written int64, err error) {
 	if buf != nil && len(buf) == 0 {
 		panic("empty buffer in CopyBuffer")
 	}
@@ -468,7 +468,7 @@ func copyBuffer(dst Writer, src Reader, buf []byte) (written int64, err error) {
 	return written, err
 }
 
-func copyBufferPr(dst Writer, src Reader, buf []byte, pr bool) (written int64, err error) {
+func copyBufferPr(dst Writer, src Reader, buf []byte, pr *bool) (written int64, err error) {
 	// If the reader has a WriteTo method, use it to do the copy.
 	// Avoids an allocation and a copy.
 	if wt, ok := src.(WriterTo); ok {
@@ -727,7 +727,7 @@ func (discard) ReadFrom(r Reader) (n int64, err error) {
 	}
 }
 
-func (discardPr) ReadFromPr(r Reader, pr bool) (n int64, err error) {
+func (discardPr) ReadFromPr(r Reader, pr *bool) (n int64, err error) {
 	bufp := blackHolePool.Get().(*[]byte)
 	readSize := 0
 	for {
